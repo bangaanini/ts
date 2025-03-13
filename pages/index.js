@@ -29,15 +29,19 @@ export default function Home() {
     // Tambah task baru
     const addTask = async (task) => {
         const { data, error } = await supabase
-        .from('tasks')
-        .insert({ ...task, completed: false })
-        .single();
-        if (error) {
-        console.error('Error adding task:', error);
-        } else {
-        setTasks((prev) => [...prev, data]);
+            .from('tasks')
+            .insert({ ...task, completed: false })
+            .select()  // Tambahkan select() untuk memastikan data dikembalikan
+            .single();
+    
+        if (error || !data) {  // Cek jika error atau data null
+            console.error('Error adding task:', error);
+            return;
         }
-    };
+    
+        setTasks((prev) => [...prev, data]);  // Tambahkan data hanya jika tidak null
+        alert('Task berhasil ditambahkan!');  // Tambahkan notifikasi
+    };    
 
     // Toggle status task (optimistic update)
     const toggleComplete = async (task) => {
@@ -68,7 +72,6 @@ export default function Home() {
       );
     }
     };
-
     
     // Update task (edit)
     const updateTask = async (id, updatedData) => {
@@ -88,6 +91,21 @@ export default function Home() {
         }
     };
 
+    // Hapus task
+    const deleteTask = async (taskId) => {
+        const { error } = await supabase
+            .from('tasks')
+            .delete()
+            .eq('id', taskId);
+    
+        if (error) {
+            console.error('Error deleting task:', error);
+            return;
+        }
+    
+        setTasks((prevTasks) => prevTasks.filter(task => task.id !== taskId));
+    };
+    
     // Reset semua task: mengubah completed ke false untuk semua task
     const resetAllTasks = async () => {
         // Optimistic update: langsung set semua task completed ke false di UI
@@ -158,6 +176,7 @@ export default function Home() {
                 onToggleComplete={toggleComplete}
                 onReset={resetTask}
                 onEdit={updateTask}
+                onDelete={deleteTask}
             />
             ))
         )}

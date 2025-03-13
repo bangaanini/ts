@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const TaskCard = ({ task, onToggleComplete, onReset, onEdit }) => {
+const TaskCard = ({ task, onToggleComplete, onReset, onEdit, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProjectName, setEditedProjectName] = useState(task.project_name);
   const [editedTaskDetail, setEditedTaskDetail] = useState(task.task_detail);
@@ -80,6 +80,12 @@ const TaskCard = ({ task, onToggleComplete, onReset, onEdit }) => {
                 className="bg-red-500 text-white px-3 py-1 rounded"
               >
                 Reset
+              </button>
+              <button
+                onClick={() => onDelete(task.id)}
+                className="bg-red-600 text-white px-3 py-1 rounded"
+              >
+                Delete
               </button>
             </div>
           </div>
